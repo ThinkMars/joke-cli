@@ -2,16 +2,16 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { copy } from 'fs-extra'
-
 import chalk from "chalk";
 import ora from "ora";
 import { $ } from "execa";
 import { program } from "commander"
 import inquirer from "inquirer";
+import { isDirEmpty, __dirname, workspaceRoot } from '../tools.js'
+import { build } from '../script/build.js'
+import { dev } from '../script/dev.js'
 
-import { isDirEmpty, __dirname, workspaceRoot } from './tools.js'
-
-const packageJson = JSON.parse(readFileSync(resolve(__dirname, './package.json'), 'utf8'));
+const packageJson = JSON.parse(readFileSync(resolve(__dirname, './package.json'), 'utf8'))
 
 // // 定义传参，并处理参数
 // program.option('-a <num>', 'a test number', (num) => {
@@ -20,7 +20,12 @@ const packageJson = JSON.parse(readFileSync(resolve(__dirname, './package.json')
 
 // 1、定义命令
 program.command('create <projectName>').action(createAction)
+
+program.command('dev').description('start dev server').action(startDev)
+program.command('build').description('start build for production').action(startBuild)
+
 program.version(packageJson.version)
+
 program.parse()
 
 // 获取输入的参数
@@ -47,7 +52,7 @@ async function createAction(projectName) {
       name: "pkgManager",
       message: "select you package manager",
       default: 'pnpm',
-      choices: ['pnpm', 'npm', 'yarn']
+      choices: ['pnpm', 'npm', 'yarn', 'other']
     }
   ])
   const { pkgManager } = answers
@@ -63,7 +68,10 @@ async function createAction(projectName) {
 
         spinner.text = chalk.grey.bold("installing dependencies...")
 
-        await installDeps(pkgManager)
+        //安装依赖时，可以用自己的依赖管理器，如果没有指定，则使用默认的pnpm
+        if (pkgManager !== 'other') {
+          await installDeps(pkgManager)
+        }
 
         spinner.succeed(chalk.bgGreenBright.bold("created successfully!!"))
       })
@@ -83,4 +91,15 @@ async function installDeps(pkgManager) {
       spinner.text = line
     }
   }
+}
+
+function startDev() {
+  const { args } = program
+  // console.log('args: ', args);
+  return dev(args)
+}
+
+function startBuild() {
+  const { args } = program
+  return build(args)
 }

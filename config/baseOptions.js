@@ -1,15 +1,15 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-// const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+import path from 'node:path'
+import HtmlWebpackPlugin from 'html-webpack-plugin'
+import { WebpackManifestPlugin } from 'webpack-manifest-plugin'
+import CssMinimizerPlugin from 'css-minimizer-webpack-plugin'
+import MiniCssExtractPlugin from 'mini-css-extract-plugin'
+import ForkTsCheckerWebpackPlugin from 'fork-ts-checker-webpack-plugin'
+import { workspaceRoot } from '../tools.js'
 
-
-module.exports = {
+export const baseOptions = {
   entry: {
-    index: './src/index.ts',
-    polyfills: './src/polyfills',
+    index: path.resolve(workspaceRoot, 'src/index.ts'),
+    polyfills: path.resolve(workspaceRoot, 'src/polyfills'),
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -20,7 +20,7 @@ module.exports = {
       filename: "[name].css",
       chunkFilename: "[id].css",
     }),
-    // new ForkTsCheckerWebpackPlugin(), 开启ts的话需要tsconfig文件
+    new ForkTsCheckerWebpackPlugin(), // 开启ts的话需要tsconfig文件
   ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js', '.vue'],
@@ -69,7 +69,7 @@ module.exports = {
   },
   output: {
     filename: '[name].[contenthash].bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(workspaceRoot, 'dist'),
     clean: true,
   },
   optimization: {
