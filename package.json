@@ -4,7 +4,8 @@
   "version": "1.0.3",
   "type": "module",
   "scripts": {
-    "prepare": "husky"
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks"
   },
   "bin": {
     "joke": "bin/index.js"
@@ -36,9 +37,17 @@
     "globals": "^15.9.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
+    "prettier": "^3.3.3",
+    "simple-git-hooks": "^2.11.1",
     "typescript-eslint": "^8.6.0"
   },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
   "lint-staged": {
+    "*": [
+      "prettier --write --cache --ignore-unknown"
+    ],
     "*.{js,json}": "eslint --fix"
   }
 }
